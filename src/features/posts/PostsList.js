@@ -5,9 +5,16 @@ import { Link } from 'react-router-dom'
 import { PostAuthor } from './PostAuthor'
 import { ReactionButtons } from './ReactionButtons'
 import { TimeAgo } from './TimeAgo'
-import { selectAllPosts, fetchPosts } from './postsSlice'
+import {
+  selectAllPosts,
+  fetchPosts,
+  selectPostById,
+  selectPostIds,
+} from './postsSlice'
 
-let PostExcerpt = ({ post }) => {
+let PostExcerpt = ({ postId }) => {
+  const post = useSelector((state) => selectPostById(state, postId))
+
   return (
     <article className="post-excerpt" key={post.id}>
       <h3>{post.title}</h3>
@@ -27,6 +34,7 @@ let PostExcerpt = ({ post }) => {
 
 export const PostsList = () => {
   const dispatch = useDispatch()
+  const orderedPostIds = useSelector(selectPostIds)
   const posts = useSelector(selectAllPosts)
 
   const postStatus = useSelector((state) => state.posts.status)
@@ -43,12 +51,8 @@ export const PostsList = () => {
   if (postStatus === 'loading') {
     content = <div className="loader">Loading...</div>
   } else if (postStatus === 'succeeded') {
-    const orderedPosts = posts
-      .slice()
-      .sort((a, b) => b.date.localeCompare(a.date))
-
-    content = orderedPosts.map((post) => (
-      <PostExcerpt key={post.id} post={post} />
+    content = orderedPostIds.map((postId) => (
+      <PostExcerpt key={postId} postId={postId} />
     ))
   } else if (postStatus === 'error') {
     content = <div>{error}</div>
