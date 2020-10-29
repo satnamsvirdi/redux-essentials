@@ -59,7 +59,7 @@ const postsSlice = createSlice({
     },
     [fetchPosts.rejected]: (state, action) => {
       state.status = 'failed'
-      state.error = action.payload
+      state.error = action.error.message
     },
     [addNewPost.fulfilled]: postsAdapter.addOne,
   },
